@@ -1,0 +1,62 @@
+'''
+Write a program that takes an email address and string of text on the command line
+and then, using Selenium, logs into your email account and sends an email of the
+ string to the provided address. (You might want to set up a separate email account for this program.)
+'''
+
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+import time
+
+
+def send_mail(receiver, message):
+
+
+    email_url = 'xxx'
+    my_mail_addr= xxx'
+    password= 'xxx'
+
+
+# navigate to the mail homepage and log in by selenium
+    driver = webdriver.Chrome("xxx\chromedriver.exe")
+  #  url ="https://www.google.com/"
+    driver.get(email_url)
+
+    for handle in driver.window_handles:
+        driver.switch_to.window(handle)
+        print (handle)
+
+    email_input= driver.find_element_by_id('login-username')
+    email_input.send_keys(my_mail_addr)
+
+    next_button= driver.find_element_by_id('login-signin')
+    next_button.click()
+ #   wait = WebDriverWait(driver, 10)
+    time.sleep(2)
+
+
+    driver.switch_to.default_content()
+    driver.find_element_by_id('login-passwd').send_keys(password)
+    driver.find_element_by_id('login-signin').click()
+
+
+   #driver.switch_to.window()
+    time.sleep(2)
+    driver.find_element_by_css_selector('a[data-test-id="compose-button"]').click()
+
+    driver.find_element_by_id('message-to-field').send_keys(receiver)
+    driver.find_element_by_css_selector(
+            'input[data-test-id="compose-subject"]').send_keys("test")
+    driver.find_element_by_css_selector('div[data-test-id="rte"]').send_keys(message)
+    driver.find_element_by_css_selector('button[data-test-id="compose-send-button"]').click()
+    driver.quit()
+
+
+
+
+# send mail
+receiver = 'bbbbb'
+message="for testing only"
+send_mail(receiver,message)
+
+
