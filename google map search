@@ -1,0 +1,70 @@
+import pyperclip,webbrowser,sys
+import requests,bs4
+
+def mapit():
+
+    if (len(sys.argv)>1):
+        address= ' '.join(sys.argv[1:])
+
+    else:
+        address = pyperclip.paste()
+        print (address)
+
+    webbrowser.open('https://www.google.com/maps/place/' + address)
+
+
+def web_test(keyword):
+    links=[]
+    print ("googling ....")
+    url = 'https://www.google.com/search?q='+keyword
+    try:
+        res= requests.get(url)
+    except Exception:
+        res.raise_for_status()
+    # TODO: Retrieve top search result links.
+    soup = bs4.BeautifulSoup(res.text,features="html.parser")
+    allinks=soup.select('.r a')
+    top5 = min(5,len(allinks))
+
+    for index in range(top5):
+
+        webbrowser.open('https://google.com'+allinks[index].get('href'),new=True)
+
+
+import os,os.path
+def webtest2():
+    main_url = 'https://xkcd.com/'
+
+    url = main_url
+    path = 'E:\PythonExer\PythonExer\image'
+    if (not os.path.exists(path)):
+        os.mkdir(path)
+    count = 1
+    while True:
+        page=requests.get(url)
+
+        soup= bs4.BeautifulSoup(page.text,features="html.parser")
+        images = soup.select('#comic img')[0]
+
+        if (images==[]):
+            print ("no comic image")
+
+        # save image to local
+        imagetodl=main_url+images.get('src')
+        content = requests.get(imagetodl,)
+        with open (os.path.join(path,os.path.basename(imagetodl)),'wb')as file:
+            for chunk in content.iter_content(100000):
+                file.write(chunk)
+
+      #open previous url
+        url  = main_url+soup.select('a[rel="prev"]')[0].get('href')
+        count = count+1
+        if(url ==main_url+'#'):
+            break
+
+webtest2()
+
+
+
+
+
