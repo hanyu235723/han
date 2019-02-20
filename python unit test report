@@ -1,3 +1,5 @@
+
+
 import unittest
 import os
 import time
@@ -23,7 +25,7 @@ def my_test_suit():
 
 if __name__ == '__main__':
 
-    now = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
+    now = time.strftime("%Y %M %d %H %M %S", time.localtime(time.time()))
     report = os.path.join(report_path, "result_" + now + ".html")
 
     with open(report, "wb") as f:
