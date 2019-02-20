@@ -2,6 +2,9 @@
 Working with CSV Files and JSON Data
 Project: Fetching Current Weather Data
 '''
+# learn how to use json.loads(it is "loads" not "load") to load string to json format text and json.dump()(?) do the opposite
+# learn the basic use of requests 
+# note if api website needs teh api key ,should apply one and attach as parameters for requests ,as code shows )
 
 import os
 import requests
