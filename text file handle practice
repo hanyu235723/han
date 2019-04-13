@@ -1,0 +1,245 @@
+
+# take a file as function input and return the count of the words in file
+# 读文件的坑：第一： line 的换行符。2.split后有空格也要remove，参考string_str.count_s try/except
+
+from pprint import pprint
+from myPractice.CollecationS.string_str import  count_s
+
+#mysolution1
+def count_w1(file):
+    s=''
+    count = 0
+
+    with open(file) as f:
+        for line in f:
+
+            for sen in line.split('.'):
+            #因为换行符也会返回元素，所以要跳过
+                if (sen=='\n'):
+                    break
+
+                for s_line in sen.split(','):
+
+                    count += count_s(s_line)
+
+
+    return count
+
+# my solution 2" :if we can use file.readlines,similar to solution 1
+def count_w2(file):
+    s=''
+    count = 0
+
+    with open(file) as f:
+        line_string=f.readlines()
+        for line in line_string:
+            for full_sen in line.split('.'):
+                if (full_sen=='\n'):
+                    break
+                for half_sen in full_sen.split(','):
+                    count += count_s(half_sen)
+
+
+
+    return count
+
+# solution3: 把逗号都替换成空格，继续按照空格来split.我竟然没想到。。。。这也是常用的方法。replace ->split
+def count_w3(file):
+    r= re.compile(r'[,.\n]')
+    with open (file,'r') as f:
+        s = f.read()
+        s=r.sub(' ',s)
+        print (s)
+       # s = s.replace(',', ' ')
+        string_list = s.split(' ')
+        print (string_list)
+        return len(string_list)
+
+
+####################################################################################################
+###################################################################################################
+### create a new file with all letters of English alphabet inside it ,one letter per line
+## open() is builtin function ,not in file module
+path = 'E:\PythonExer\PythonExer\myresult'
+fname= 'hyyletter.txt'
+def letter_f(path,fname):
+    if not(os.path.isdir(path)):
+        os.mkdir(path)
+
+    file =os.path.join(path,fname)
+    try:
+        with open(file, 'w') as f:
+            for letter in string.ascii_lowercase:
+                f.write(letter+'\n')
+
+    except:
+        pass
+
+letter_f(path,fname)
+
+
+# create 26 letter files with each file has one letter name as letterr like a.txt containing a only
+
+def letter5():
+    path = 'E:\PythonExer\PythonExer\myresult'
+    s= string.ascii_lowercase
+
+    for letter in s:
+        fname = 'letter.txt'
+        file =os.path.join(path,fname)
+        with open (file,'w')as f:
+            f.write(letter)
+
+
+import os.path
+## write 26 letters into 26 txt files spearetely
+def letter5():
+    path = 'E:\PythonExer\PythonExer\myresult'
+    s = string.ascii_lowercase
+
+    for letter in s:
+        fname = letter+'.txt'
+        file = os.path.join(path, fname)
+        with open(file, 'w')as f:
+            f.write(letter)
+
+
+## write the 26 letter files and get the letters into a list
+
+import string
+import os.path
+
+
+def letter5():
+    r = []
+    path = 'E:\PythonExer\PythonExer\myresult'
+    file_list = glob.glob(path + '\*.txt')
+    print(file_list)
+    for file in file_list:
+        with open(file, 'r') as f:
+            r.append(f.read().strip('\n'))
+
+    return r
+
+# to get the letter from the 26 letter files and check if the letter is in 'python' and if append it to a list
+
+def letter6():
+    s= 'python'
+
+    r=[]
+    path = 'E:\PythonExer\PythonExer\myresult'
+    file_list=glob.glob(path+'\*.txt')
+    for file in file_list:
+        with open(file,'r' ) as f:
+            line= f.read().strip('\n')
+            if (line in s):
+                r.append(line)
+    print(r)
+
+
+# read the contry file and remove all unnecessary info and save to a new file
+
+def country_update():
+    path='E:\PythonExer\PythonExer'
+    file= 'countries-raw.txt'
+    new_file = 'new_contries.txt'
+
+
+
+    with open(os.path.join(path,file),'r') as f:
+        with open (os.path.join(path,new_file),'w') as newf:
+            for line in f:
+                if not line.isspace():
+                    if (len(line.strip('\n'))>1):
+                        if (line.strip('\n')!='Top of Page'):
+                            newf.write(line)
+
+
+
+
+# get the top 5 most densely polulated contries
+def rank_population():
+    path = 'E:\PythonExer\PythonExer'
+    file = 'countries-by-area.txt'
+    contry_list=[]
+    with open(os.path.join(path, file), 'r') as f:
+        contries_list = f.readlines()
+        for contry in contries_list[2::]:
+
+            temp_list=contry.strip('\n').strip(' ').replace('\t','').split(',')
+
+            r=float(temp_list[3])/float(temp_list[2])
+
+            temp_list.append(r)
+
+            contry_list.append(temp_list)
+   # pprint (contry_list)
+
+    #print (contry_list)
+    def inner(l):
+        return l[4]
+    sort_list =sorted(contry_list,key=inner,reverse =True )
+    pprint (sort_list)
+
+
+# unzip a zip file and count the files
+from zipfile import ZipFile
+def unzip():
+
+    zipfile= 'E:\PythonExer\PythonExer\\files.zip'
+    targetpath = 'E:\PythonExer\PythonExer\\unzip'
+    myzipfile=ZipFile(zipfile,'r')
+    zip_list=myzipfile.namelist()
+    count = len([i for i in zip_list if i.split('.')[1] == 'py'])
+    print (count)
+    myzipfile.extractall(targetpath)
+    myzipfile.close()
+
+
+#
+
+import os
+def walk_mutilp_dir():
+    count = 0
+    rootpath= 'E:\PythonExer\PythonExer\subdirs'
+    print (os.listdir(rootpath))
+    for dirpath, dirnames, filenames in os.walk(rootpath):
+     #   print("just for debug", dirpath, dirnames, filenames)
+
+        for f in filenames:
+
+            if f.split('.')[1]=='py':
+                count+=1
+
+
+    print ("python files count is :",count)
+
+#easy way
+import glob
+def count_files():
+    file_list = glob.glob('E:\PythonExer\PythonExer/subdirs/**/*.py',recursive= True)
+    print (len(file_list))
+
+
+# update url  from files
+#https:/www.google.com->http://www.google.com
+#https:/www.yahoo.com
+#https:/www.stackoverflow.com
+#https:/www.pythonhow.com
+import re
+def correct_url():
+    pattern = re.compile(r'(?<=http).*(?=www)')
+    path = 'E:\PythonExer\PythonExer\\urls.txt'
+    new_file= 'E:\PythonExer\PythonExer\\urlsnew.txt'
+    with open (path,'r') as f:
+        urls= f.readlines()
+        with open (new_file,'w') as new_f:
+            for url in urls:
+                s= pattern.search(url)
+                url=url.replace(s.group(0),'://')
+                new_f.write(url)
+
+
+
+
+correct_url()
