@@ -1,0 +1,34 @@
+# to find all broken links using pytyon and selenkum
+
+from selenium import webdriver
+
+import requests
+
+def check_connection(link):
+  #  r=requests.get(link)
+    r=requests.head(link)
+    if (r.status_code >=400):
+        return False
+
+    return True
+
+def check_links(homeurl):
+
+    driver= webdriver.Chrome("C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe")
+
+    driver.get(homeurl)
+
+    link_list = driver.find_elements_by_tag_name('a')
+
+    for element in link_list:
+
+        url = element.get_attribute("href")
+        name = element.get_attribute("text")
+
+        if url :
+           if not (check_connection(url)):
+                print ("{} is bad  as {}".format(name,url))
+
+    driver.close()
+homeurl = 'https://selenium-python.readthedocs.io/locating-elements.html'
+check_links(homeurl)
