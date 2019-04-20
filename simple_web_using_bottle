@@ -1,0 +1,115 @@
+# learn to create web ,using bottle 
+#  #if valid user then log in sucessfully if not ask to regisetr and use regular expression to validate
+#  and encrip password then save to DB if so
+
+from bottle import run, request, post,route,jinja2_template,TEMPLATE_PATH,redirect
+import hashlib
+import sqlite3
+import random
+import re
+
+
+TEMPLATE_PATH.append('./templates')
+conn = sqlite3.connect('user.db')
+
+
+@route('/', methods=['GET', 'POST'])
+def home():
+    return jinja2_template('home.html')
+
+@route('/signin',method='GET')
+def signin_form():
+    return jinja2_template('form.html')
+
+@route('/signin',method='POST')
+def signin():
+
+    username = request.forms['username']
+    password = request.forms['password']
+
+# from database check if username exists;
+    c = conn.cursor()
+    t=(username,)
+    for single_user in c.execute('select username,password from user where username==?',t):
+        if single_user[1]==get_md5(password):
+                return jinja2_template('signin-ok.html', username=username)
+                break
+    else:
+
+        return jinja2_template('form.html', message='Bad username or password', username=username)
+
+
+@route('/register',method = 'GET')
+def register_form():
+    return jinja2_template('register.html')
+
+@post('/register')
+def register():
+    username = request.forms['username']
+    password = request.forms['password']
+
+    # from database check if username exists;
+    c = conn.cursor()
+    t = (username,)
+    users =list( c.execute('select username,password from user where username==?', t))
+ #   print (users)
+    if (users):
+
+        return jinja2_template('register.html',message = username + ' exists')
+    if not check_email(username):
+        return jinja2_template('register.html', message=username + 'format not valid')
+    if not check_password(password):
+        return jinja2_template('register.html',message = password + 'format not valid')
+
+    password = get_md5(password)
+    t= (username,password)
+    c.execute('insert into user (username,password) values (?,?)',t)
+    conn.commit()
+    return jinja2_template('signin-ok.html')
+
+def get_md5(s):
+        return hashlib.md5(s.encode('utf-8')).hexdigest()
+
+# emamil address regular expression: anychar even.is allowed followed by @xx.com or xx.cn
+# from others :"^.+@([?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$
+emailpattern =re.compile(r'^\S+@\S+\.\S{2,3}$')
+def check_email(email):
+    if emailpattern.match(email):
+        return True
+    return False
+
+'''
+Minimum 8 characters.
+The alphabets must be between [a-z]
+At least one alphabet should be of Upper Case [A-Z]
+At least 1 number or digit between [0-9].
+At least 1 character from [ _ or @ or $ ].
+space not allowed
+'''
+def check_password(password):
+
+    if (len(password) < 8):
+        return False
+    elif re.search("\s", password):
+        return False
+    elif not re.search("[a-z]", password):
+        return False
+    elif not re.search("[A-Z]", password):
+        return False
+    elif not re.search("[0-9]", password):
+        return False
+    elif not re.search("[_@$%#]", password):
+        return False
+
+    return True
+
+class User(object):
+    def __init__(self, username, password):
+        self.username = username
+        self.salt = ''.join([chr(random.randint(48, 122)) for i in range(20)])
+        self.password = get_md5(password + self.salt)
+
+
+if __name__ == '__main__':
+
+    run(host='localhost', port=8080,debug = True,reloader=True)
